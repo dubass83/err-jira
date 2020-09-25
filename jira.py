@@ -1,4 +1,5 @@
 from errbot import BotPlugin, botcmd
+from itertools import chain
 import logging
 
 log = logging.getLogger(name='errbot.plugins.Jira')
@@ -8,6 +9,19 @@ try:
 except ImportError:
     log.error("Please install 'jira' python package")
 
+try:
+    from config import JIRA_URL, JIRA_USERNAME, JIRA_PASSWORD
+except ImportError:
+    # Default mandatory configuration
+    JIRA_URL = ''
+    JIRA_USERNAME = ''
+    JIRA_PASSWORD = ''
+
+CONFIG_TEMPLATE = {
+    'URL': JIRA_URL,
+    'USERNAME': JIRA_USERNAME,
+    'PASSWORD': JIRA_PASSWORD}
+
 
 class Jira(BotPlugin):
     """Plugin for Jira"""
@@ -15,7 +29,7 @@ class Jira(BotPlugin):
     def activate(self):
 
         if not self.config:
-            #Don't allow activation until we are configured
+            # Don't allow activation until we are configured
             message = 'Jira is not configured, please do so.'
             self.log.info(message)
             self.warn_admins(message)
@@ -27,17 +41,21 @@ class Jira(BotPlugin):
 
     def get_configuration_template(self):
         """ configuration entries """
-        config = {
-            'api_url': None,
-            'api_user': None,
-            'api_pass': None,
-        }
-        return config
+        return CONFIG_TEMPLATE
+
+    def configure(self, configuration):
+        if configuration is not None and configuration != {}:
+            config = dict(chain(CONFIG_TEMPLATE.items(),
+                                configuration.items()))
+        else:
+            config = CONFIG_TEMPLATE
+        super(Jira, self).configure(config)
+        return
 
     def _login(self):
-        username = self.config['api_user']
-        password = self.config['api_pass']
-        api_url = self.config['api_url']
+        username = self.config['USERNAME']
+        password = self.config['PASSWORD']
+        api_url = self.config['URL']
 
         try:
             login = JIRA(server=api_url, basic_auth=(username, password))

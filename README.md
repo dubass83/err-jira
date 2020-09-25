@@ -10,7 +10,7 @@ pip install jira
 Installation
 ---
 ```
-!repos install https://github.com/sijis/err-jira.git
+!repos install https://github.com/dubass83/err-jira.git
 ```
 
 Usage
