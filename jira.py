@@ -103,10 +103,9 @@ class Jira(BotPlugin):
         except JIRAError:
             response = 'Ticket {0} not found.'.format(ticket)
 
-        # self.send(msg.frm,
-        #           response,
-        #           in_reply_to=msg,
-        #           groupchat_nick_reply=True)
+        self.send(msg.frm,
+                  response,
+                  groupchat_nick_reply=True)
 
     @botcmd(split_args_with=' ')
     def jira_comment(self, msg, args):
