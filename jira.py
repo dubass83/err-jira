@@ -105,6 +105,7 @@ class Jira(BotPlugin):
 
         self.send(msg.frm,
                   response,
+                  in_reply_to=msg,
                   groupchat_nick_reply=True)
 
     @botcmd(split_args_with=' ')
